@@ -1,10 +1,10 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, render_template
 from flask_migrate import Migrate
-from flask_login import LoginManager, login_required
+from flask_login import LoginManager, login_required, current_user
 from config import Config
 
-db = SQLAlchemy()
+from models import db
+
 migrate = Migrate()
 login = LoginManager()
 login.login_view = 'login'
@@ -15,14 +15,33 @@ app.config.from_object(Config)
 db.init_app(app)
 migrate.init_app(app, db)
 login.init_app(app)
-from auth import  bp
-app.register_blueprint(bp)
+
+def blueprints():
+    from auth import bp
+
+    app.register_blueprint(bp)
+
 with app.app_context():
     db.create_all()
+    blueprints()
+    
 
-@app.route('/', methods=['GET'])
-def home():
-    return '<h1>Nachbarsharing</h1>'
+@login.user_loader
+def load_user(user_id):
+    from models import User
+    return User.query.get(int(user_id))
+
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('index.html', username=current_user.username)
+
+
+
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

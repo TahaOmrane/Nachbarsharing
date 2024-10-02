@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Signup</title>
+  </head>
+  <body>
+    <h2>Signup</h2>
+    <form method="POST">
+      <label for="username">Username</label>
+      <input type="text" name="username" required />
+      <br />
+      <label for="email">Email</label>
+      <input type="email" name="email" required />
+      <br />
+      <label for="password">Password</label>
+      <input type="password" name="password" required />
+      <br />
+      <button type="submit">Signup</button>
+    </form>
+    <a href="{{ url_for('auth.login') }}">Already have an account? Log in</a>
+  </body>
+</html>
