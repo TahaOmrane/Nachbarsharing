@@ -17,17 +17,12 @@ migrate.init_app(app, db)
 login.init_app(app)
 from auth import  bp
 app.register_blueprint(bp)
-
+with app.app_context():
+    db.create_all()
 
 @app.route('/', methods=['GET'])
 def home():
-   
-    return '<h1>Share Neighbour</h1>'
-
-
-
-
-
+    return '<h1>Nachbarsharing</h1>'
 
 if __name__ == "__main__":
     app.run(debug=True)
