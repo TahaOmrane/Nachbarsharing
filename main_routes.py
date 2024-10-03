@@ -84,9 +84,10 @@ def check_tool_availability(tool_id, start_date, end_date):
         BorrowingHistory.return_date >= start_date,  
         BorrowingHistory.borrow_date <= end_date    
     ).all()
+    for conflict in conflicts:
+        print(conflict.lender_id)
 
     return len(conflicts) == 0  
-
 
 def borrow_tool(user_id, tool_id, start_date, end_date):
     tool = Tool.query.get(tool_id)
@@ -114,11 +115,25 @@ def borrow_tool(user_id, tool_id, start_date, end_date):
 
 @main.route('/borrow/<int:tool_id>', methods=['POST'])
 def borrow_tool_route(tool_id):
-    user_id = current_user.id  # Assuming Flask-Login for current user
+    user_id = current_user.id 
     start_date = datetime.strptime(request.form['start_date'], '%Y-%m-%d')
     end_date = datetime.strptime(request.form['end_date'], '%Y-%m-%d')
 
     message = borrow_tool(user_id, tool_id, start_date, end_date)
 
     flash(message)
-    return redirect(url_for('tool_detail', tool_id=tool_id))
+    return redirect(url_for('main.tool_detail', tool_id=tool_id))
+
+
+@main.route('/borrowing-history')
+@login_required
+def borrowing_history():
+    borrowed_tools = BorrowingHistory.query.filter_by(borrower_id=current_user.id).all()
+
+    lent_tools = BorrowingHistory.query.filter_by(lender_id=current_user.id).all()
+    for history in borrowed_tools:
+        print(history.borrower_id,history.lender_id)
+
+    return render_template('borrowing_history.html', borrowed_tools=borrowed_tools, lent_tools=lent_tools)
+
+

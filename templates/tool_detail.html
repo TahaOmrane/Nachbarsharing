@@ -25,7 +25,7 @@
 
 <form
   method="POST"
-  action="{{ url_for('borrow_tool_route', tool_id=tool.id) }}"
+  action="{{ url_for('main.borrow_tool_route', tool_id=tool.id) }}"
 >
   <label for="start_date">Start Date:</label>
   <input type="date" name="start_date" required />

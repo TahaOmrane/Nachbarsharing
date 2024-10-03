@@ -1,0 +1,99 @@
+{% extends 'base.html' %} {% block title %}Borrowing History{% endblock %} {%
+block content %}
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+  }
+
+  .history-table th,
+  .history-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+
+  .history-table th {
+    background-color: #f2f2f2;
+  }
+
+  h1,
+  h2 {
+    margin-bottom: 20px;
+  }
+</style>
+<div class="container">
+  <h1>Borrowing History</h1>
+
+  <h2>Tools You've Borrowed</h2>
+  {% if borrowed_tools %}
+  <table class="history-table">
+    <thead>
+      <tr>
+        <th>Tool Name</th>
+        <th>Lender</th>
+        <th>Borrow Date</th>
+        <th>Return Date</th>
+        <th>Tool Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for history in borrowed_tools %}
+      <tr>
+        <td>{{ history.tool.name }}</td>
+        <td>{{ history.lender.username }}</td>
+        <td>{{ history.borrow_date.strftime('%Y-%m-%d') }}</td>
+        <td>
+          {% if history.return_date %} {{
+          history.return_date.strftime('%Y-%m-%d') }} {% else %} Not Returned
+          Yet {% endif %}
+        </td>
+        <td>{{ history.tool.condition }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>You haven't borrowed any tools yet.</p>
+  {% endif %}
+
+  <h2>Tools Lent to Others</h2>
+  {% if lent_tools %}
+  <table class="history-table">
+    <thead>
+      <tr>
+        <th>Tool Name</th>
+        <th>Borrower</th>
+        <th>Borrow Date</th>
+        <th>Return Date</th>
+        <th>Tool Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for history in lent_tools %}
+      <tr>
+        <td>{{ history.tool.name }}</td>
+        <td>{{ history.borrower.username }}</td>
+        <td>{{ history.borrow_date.strftime('%Y-%m-%d') }}</td>
+        <td>
+          {% if history.return_date %} {{
+          history.return_date.strftime('%Y-%m-%d') }} {% else %} Not Returned
+          Yet {% endif %}
+        </td>
+        <td>{{ history.tool.condition }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No one has borrowed your tools yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

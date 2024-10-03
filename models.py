@@ -23,6 +23,10 @@ class User(UserMixin, db.Model):
                                         backref='borrower', 
                                         foreign_keys='BorrowingHistory.borrower_id', 
                                         lazy=True)    
+    lent_tools= db.relationship('BorrowingHistory', 
+                                        backref='lender', 
+                                        foreign_keys='BorrowingHistory.lender_id', 
+                                        lazy=True)    
     friends = db.relationship(
         'User', secondary='user_friends',
         primaryjoin=(id == user_friends.c.user_id),
@@ -58,6 +62,8 @@ class BorrowingHistory(db.Model):
     tool_id = db.Column(db.Integer, db.ForeignKey('tool.id'), nullable=False)
     borrower_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     lender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    tool = db.relationship('Tool', backref='borrowed_history')
+
 
 class Favorite(db.Model):
     id = db.Column(db.Integer, primary_key=True)
