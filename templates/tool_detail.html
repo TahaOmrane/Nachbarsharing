@@ -1,0 +1,49 @@
+{% extends 'base.html' %} {% block title %}{{ tool.name }} - Details{% endblock
+%} {% block content %}
+<h2>{{ tool.name }}</h2>
+<p>{{ tool.description }}</p>
+<p>Zustand: {{ tool.condition }}</p>
+<p>
+  Sicherheitskaution erforderlich: {{ 'Ja' if tool.deposit_required else 'Nein'
+  }}
+</p>
+
+<h3>Verfügbarkeit</h3>
+<p>Verfügbar ab: {{ tool.available_from.strftime('%d.%m.%Y') }}</p>
+<p>Verfügbar bis: {{ tool.available_until.strftime('%d.%m.%Y') }}</p>
+
+{% if not tool.borrowed_by_id %}
+<form method="POST">
+  <button type="submit">Ausleihen</button>
+</form>
+{% else %}
+<p>Dieses Werkzeug ist bereits ausgeliehen.</p>
+{% endif %}
+
+<h3>Verfügbarkeitskalender</h3>
+<input type="text" id="availability_calendar" readonly />
+
+<form
+  method="POST"
+  action="{{ url_for('borrow_tool_route', tool_id=tool.id) }}"
+>
+  <label for="start_date">Start Date:</label>
+  <input type="date" name="start_date" required />
+
+  <label for="end_date">End Date:</label>
+  <input type="date" name="end_date" required />
+
+  <button type="submit">Borrow Tool</button>
+</form>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    flatpickr("#availability_calendar", {
+      dateFormat: "Y-m-d",
+      minDate: "{{ tool.available_from.strftime('%Y-%m-%d') }}",
+      maxDate: "{{ tool.available_until.strftime('%Y-%m-%d') }}",
+    });
+  });
+</script>
+
+{% endblock %}

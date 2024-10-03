@@ -7,7 +7,7 @@ from models import db
 
 migrate = Migrate()
 login = LoginManager()
-login.login_view = 'login'
+login.login_view = 'auth.login'
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -18,8 +18,9 @@ login.init_app(app)
 
 def blueprints():
     from auth import bp
-
+    from main_routes import main
     app.register_blueprint(bp)
+    app.register_blueprint(main)
 
 with app.app_context():
     db.create_all()
@@ -32,15 +33,10 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-@app.route('/dashboard')
+@app.route('/')
 @login_required
 def dashboard():
     return render_template('index.html', username=current_user.username)
-
-
-
-
-
 
 
 if __name__ == "__main__":

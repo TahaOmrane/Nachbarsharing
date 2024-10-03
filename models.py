@@ -5,6 +5,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
+
+user_friends = db.Table('user_friends',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('friend_id', db.Integer, db.ForeignKey('user.id'))
+)
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False, unique=True)
@@ -12,13 +18,15 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     rank = db.Column(db.String(50), nullable=True)
     
-    tools = db.relationship('Tool', backref='owner', lazy=True)
-    borrowing_history = db.relationship('BorrowingHistory', backref='borrower', lazy=True)
-    
+    tools = db.relationship('Tool', backref='owner',foreign_keys='Tool.owner_id', lazy=True)
+    borrowing_history = db.relationship('BorrowingHistory', 
+                                        backref='borrower', 
+                                        foreign_keys='BorrowingHistory.borrower_id', 
+                                        lazy=True)    
     friends = db.relationship(
         'User', secondary='user_friends',
-        primaryjoin=id == 'user_friends.c.user_id',
-        secondaryjoin=id == 'user_friends.c.friend_id',
+        primaryjoin=(id == user_friends.c.user_id),
+        secondaryjoin=(id == user_friends.c.friend_id),
         backref='added_by'
     )
 
@@ -34,6 +42,8 @@ class Tool(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
     availability = db.Column(db.String(50), nullable=False)
+    available_from = db.Column(db.Date, nullable=False)
+    available_until = db.Column(db.Date, nullable=False)
     condition = db.Column(db.String(50), nullable=True)
     deposit_required = db.Column(db.Boolean, default=False)
     
@@ -75,9 +85,8 @@ class UserRank(db.Model):
     description = db.Column(db.Text, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-user_friends = db.Table('user_friends',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('friend_id', db.Integer, db.ForeignKey('user.id'))
-)
+
+
+
 
 

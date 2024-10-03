@@ -16,7 +16,7 @@ def signup():
         user_exists = User.query.filter((User.username == username) | (User.email == email)).first()
         if user_exists:
             flash('Username or email already exists, please try again.', 'error')
-            return redirect(url_for('signup'))
+            return redirect(url_for('auth.signup'))
 
         new_user = User(username=username, email=email)
         new_user.set_password(password)
@@ -24,7 +24,7 @@ def signup():
         db.session.commit()
         
         flash('Account created successfully. Please log in.', 'success')
-        return redirect(url_for('login'))
+        return redirect(url_for('auth.login'))
     
     return render_template('signup.html')
 
@@ -51,4 +51,4 @@ def login():
 def logout():
     logout_user()
     flash('You have been logged out.', 'info')
-    return redirect(url_for('login'))
+    return redirect(url_for('auth.login'))
