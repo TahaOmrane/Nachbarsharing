@@ -17,7 +17,7 @@ def submit_tool():
         available_from = datetime.strptime(request.form['available_from'], '%Y-%m-%d')
         available_until = datetime.strptime(request.form['available_until'], '%Y-%m-%d')
         condition = request.form['condition']
-        deposit_required = 'deposit_required' in request.form 
+        deposit = float(request.form.get('deposit')) 
         if available_from > available_until:
             flash('Das Anfangsdatum darf nicht nach dem Enddatum liegen.', 'error')
             return redirect(url_for('main.submit_tool'))
@@ -30,7 +30,7 @@ def submit_tool():
             available_until=available_until,
             availability='available',  
             condition=condition,  
-            deposit_required=deposit_required,  
+            deposit_required=deposit,  
             owner_id=current_user.id
         )
         print("added tool")
@@ -43,7 +43,6 @@ def submit_tool():
         return redirect(url_for('dashboard'))  
 
     return render_template('submit_tool.html')
-
 
 @main.route('/explore', methods=['GET'])
 @login_required
@@ -72,7 +71,7 @@ def tool_detail(tool_id):
             db.session.commit()
 
             flash('Werkzeug erfolgreich ausgeliehen!', 'success')
-            return redirect(url_for('mian.borrowing_history'))
+            return redirect(url_for('main.borrowing_history'))
         else:
             flash('Werkzeug ist derzeit nicht verfügbar.', 'error')
 
@@ -128,10 +127,8 @@ def borrow_tool_route(tool_id):
 @main.route('/borrowing-history')
 @login_required
 def borrowing_history():
-    # Tools the user has borrowed
     borrowed_tools = BorrowingHistory.query.filter_by(borrower_id=current_user.id).all()
 
-    # Tools that others have borrowed from the user
     lent_tools = BorrowingHistory.query.filter_by(lender_id=current_user.id).all()
     for history in borrowed_tools:
         print(history.borrower_id,history.lender_id)
@@ -216,3 +213,17 @@ def favorite_tool(tool_id):
 def favorites():
     favorite_items = Favorite.query.filter_by(user_id=current_user.id).all()
     return render_template('favorites.html', favorite_items=favorite_items)
+
+
+from flask import render_template
+from models import User
+
+@main.route('/ranks')
+def ranks():
+    top_lenders = User.query.all()
+    top_borrowers = User.query.all()
+    
+    top_lenders = [user for user in top_lenders if  len(user.tools) >= 5]
+    top_borrowers = [user for user in top_borrowers if len(user.borrowing_history) >= 5]
+    
+    return render_template('ranks.html', top_lenders=top_lenders, top_borrowers=top_borrowers)

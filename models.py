@@ -49,8 +49,7 @@ class Tool(db.Model):
     available_from = db.Column(db.Date, nullable=False)
     available_until = db.Column(db.Date, nullable=False)
     condition = db.Column(db.String(50), nullable=True)
-    deposit_required = db.Column(db.Boolean, default=False)
-    
+    deposit_required = db.Column(db.Float, default=0.0)    
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     borrowed_by_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
 

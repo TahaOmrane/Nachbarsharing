@@ -1,0 +1,28 @@
+{% extends 'base.html' %} {% block title %}Ranks{% endblock %} {% block content
+%}
+<h2>Ranks</h2>
+
+<h3>Top Lenders</h3>
+{% if top_lenders %}
+<ul>
+  {% for lender in top_lenders %}
+  <li>{{ lender.username }} has lent {{ lender.tools|length }} tools</li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>No top lenders yet.</p>
+{% endif %}
+
+<h3>Top Borrowers</h3>
+{% if top_borrowers %}
+<ul>
+  {% for borrower in top_borrowers %}
+  <li>
+    {{ borrower.username }} has borrowed {{ borrower.borrowing_history|length }}
+    tools
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>No top borrowers yet.</p>
+{% endif %} {% endblock %}

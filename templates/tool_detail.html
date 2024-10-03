@@ -12,20 +12,10 @@
 <p>Verfügbar ab: {{ tool.available_from.strftime('%d.%m.%Y') }}</p>
 <p>Verfügbar bis: {{ tool.available_until.strftime('%d.%m.%Y') }}</p>
 
-{% if not tool.borrowed_by_id %}
-<form method="POST">
-  <button type="submit">Ausleihen</button>
-</form>
-{% else %}
-<p>Dieses Werkzeug ist bereits ausgeliehen.</p>
-{% endif %}
-
-<h3>Verfügbarkeitskalender</h3>
-<input type="text" id="availability_calendar" readonly />
-
 <form
   method="POST"
   action="{{ url_for('main.borrow_tool_route', tool_id=tool.id) }}"
+  id="borrow-form"
 >
   <label for="start_date">Start Date:</label>
   <input type="date" name="start_date" required />
@@ -33,8 +23,32 @@
   <label for="end_date">End Date:</label>
   <input type="date" name="end_date" required />
 
-  <button type="submit">Borrow Tool</button>
+  {% if tool.deposit_required and tool.deposit_required> 0 %}
+  <p>Kaution: €{{ tool.deposit_required }}</p>
+  <button type="button" id="pay-deposit-btn" class="btn btn-primary">
+    Kaution bezahlen (€{{ tool.deposit_required }})
+  </button>
+  {% else %}
+  <button type="submit" class="btn btn-primary">Ausleihen</button>
+  {% endif %}
 </form>
+
+<div id="deposit-modal" class="modal" style="display: none">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <p>
+      Bitte bestätigen Sie die Kautionszahlung von €{{ tool.deposit_required }}.
+    </p>
+    <button type="button" id="confirm-payment-btn" class="btn btn-success">
+      Bestätigen und bezahlen
+    </button>
+  </div>
+</div>
+
+<div id="loader" style="display: none">Processing payment...</div>
+
+<h3>Verfügbarkeitskalender</h3>
+<input type="text" id="availability_calendar" readonly />
 
 <form
   action="{{ url_for('main.favorite_tool', tool_id=tool.id) }}"
@@ -49,6 +63,28 @@
       dateFormat: "Y-m-d",
       minDate: "{{ tool.available_from.strftime('%Y-%m-%d') }}",
       maxDate: "{{ tool.available_until.strftime('%Y-%m-%d') }}",
+    });
+
+    const modal = document.getElementById("deposit-modal");
+    const payDepositBtn = document.getElementById("pay-deposit-btn");
+    const confirmPaymentBtn = document.getElementById("confirm-payment-btn");
+    const loader = document.getElementById("loader");
+
+    payDepositBtn.addEventListener("click", function () {
+      modal.style.display = "block";
+    });
+
+    confirmPaymentBtn.addEventListener("click", function () {
+      loader.style.display = "block";
+      modal.style.display = "none";
+
+      setTimeout(() => {
+        document.getElementById("borrow-form").submit();
+      }, 2000);
+    });
+
+    document.querySelector(".close").addEventListener("click", function () {
+      modal.style.display = "none";
     });
   });
 </script>
