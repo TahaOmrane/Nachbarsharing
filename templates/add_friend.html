@@ -1,0 +1,31 @@
+{% extends 'base.html' %} {% block title %}Freund Hinzufügen{% endblock %} {%
+block content %}
+<h2>Alle Benutzer</h2>
+
+<form method="GET" action="{{ url_for('main.add_friend_page') }}">
+  <label for="search">Benutzername Suchen:</label>
+  <input
+    type="text"
+    id="search"
+    name="search"
+    placeholder="Benutzername eingeben"
+  />
+  <button type="submit">Suchen</button>
+</form>
+
+<ul>
+  {% for user in users %}
+  <li>
+    {{ user.username }}
+    <form
+      action="{{ url_for('main.add_friend', username=user.username) }}"
+      method="POST"
+      style="display: inline"
+    >
+      <button type="submit">Freund Hinzufügen</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

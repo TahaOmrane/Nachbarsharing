@@ -18,11 +18,16 @@
         <a href="{{ url_for('main.submit_tool') }}">Werkzeug einreichen</a>
         <a href="{{ url_for('auth.logout') }}">Abmelden</a>
         <a href="{{ url_for('main.borrowing_history') }}">borrowing_history</a>
+        <a style="margin-left: 10px" href="{{ url_for('main.favorites') }}"
+          >Saved Tools</a
+        >
+        <a style="margin-left: 10px" href="{{ url_for('main.friends') }}"
+          >Friends</a
+        >
       </nav>
     </header>
 
     <div class="container mt-3">
-      <!-- Flash messages section -->
       {% with messages = get_flashed_messages(with_categories=true) %} {% if
       messages %}
       <div class="alert-container">

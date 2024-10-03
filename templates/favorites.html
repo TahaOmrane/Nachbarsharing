@@ -1,0 +1,29 @@
+{% extends 'base.html' %} {% block title %}Favorites{% endblock %} {% block
+content %}
+
+<h2>Your Favorite Tools</h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Available From</th>
+      <th>Available Until</th>
+      <th>Condition</th>
+      <th>Owner</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for favorite in favorite_items %}
+    <tr>
+      <td>{{ favorite.tool.name }}</td>
+      <td>{{ favorite.tool.description }}</td>
+      <td>{{ favorite.tool.available_from }}</td>
+      <td>{{ favorite.tool.available_until }}</td>
+      <td>{{ favorite.tool.condition }}</td>
+      <td>{{ favorite.tool.owner.username }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

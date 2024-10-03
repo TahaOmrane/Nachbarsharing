@@ -36,6 +36,13 @@
   <button type="submit">Borrow Tool</button>
 </form>
 
+<form
+  action="{{ url_for('main.favorite_tool', tool_id=tool.id) }}"
+  method="POST"
+>
+  <button type="submit" class="btn btn-primary">Add to Favorites</button>
+</form>
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     flatpickr("#availability_calendar", {

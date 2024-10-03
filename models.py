@@ -70,6 +70,8 @@ class Favorite(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     tool_id = db.Column(db.Integer, db.ForeignKey('tool.id'), nullable=True)
     neighbor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    tool = db.relationship('Tool', backref='favorites', lazy=True)
+
 
 class Rating(db.Model):
     id = db.Column(db.Integer, primary_key=True)

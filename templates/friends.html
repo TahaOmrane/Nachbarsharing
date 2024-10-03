@@ -1,0 +1,25 @@
+{% extends 'base.html' %} {% block title %}Meine Freunde{% endblock %} {% block
+content %}
+<h2>Freunde</h2>
+
+<ul>
+  {% for friend in friends %}
+  <li>
+    {{ friend.username }}
+    <form
+      action="{{ url_for('main.remove_friend', friend_id=friend.id) }}"
+      method="POST"
+      style="display: inline"
+    >
+      <button type="submit">Entfernen</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+
+<h3>Freund Hinzufügen</h3>
+<a href="{{ url_for('main.add_friend_page') }}">
+  <button type="button">Freund Hinzufügen</button>
+</a>
+
+{% endblock %}
