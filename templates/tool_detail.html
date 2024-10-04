@@ -2,7 +2,12 @@
 %} {% block content %}
 <div class="container mt-5">
   <h1 class="text-center mb-4">{{ tool.name }}</h1>
-
+  <!-- Favorites Button -->
+  <form action="{{ url_for('main.favorite_tool', tool_id=tool.id) }}"  method="POST" class="mb-4">
+    <button type="submit" class="btn btn-outline-primary">
+      <i class="fas fa-heart"></i> Zu Favoriten hinzufügen
+    </button>
+  </form>
   <div class="row">
     <div class="col-md-6">
       <h3><i class="fas fa-info-circle"></i> Beschreibung</h3>
@@ -25,16 +30,18 @@
         tool.available_until.strftime('%d.%m.%Y') }}
       </p>
 
-      <h4>Verfügbarkeitskalender</h4>
+      <h4>Verfügbarkeitskalender(Klicken zum Anzeigen)</h4>
       <input
         type="text"
         id="availability_calendar"
         class="form-control mb-3"
+        style="max-width: 160px"
         readonly
       />
     </div>
   </div>
 
+  {% if not tool.borrowed_by_id %}
   <div class="row mt-4">
     <div class="col-md-8 mx-auto">
       <form
@@ -48,14 +55,25 @@
             <input
               type="date"
               name="start_date"
+              id="start_date"
               class="form-control"
               required
             />
           </div>
           <div class="col-md-6 mb-3">
             <label for="end_date">Enddatum:</label>
-            <input type="date" name="end_date" class="form-control" required />
+            <input
+              type="date"
+              name="end_date"
+              id="end_date"
+              class="form-control"
+              required
+            />
           </div>
+        </div>
+
+        <div id="date-error-message" class="text-danger" style="display: none">
+          Bitte wählen Sie Daten innerhalb des verfügbaren Zeitraums.
         </div>
 
         {% if tool.deposit_required and tool.deposit_required > 0 %}
@@ -71,13 +89,21 @@
           </button>
         </div>
         {% else %}
-        <button type="submit" class="btn btn-primary btn-block">
+        <button type="submit" class="btn btn-primary btn-block" id="submit-btn">
           Ausleihen
         </button>
         {% endif %}
       </form>
+      <div
+        id="confirmation-message"
+        class="alert alert-success mt-4"
+        style="display: none"
+      >
+        <strong>Erfolgreich!</strong> Das Werkzeug wurde ausgeliehen.
+      </div>
     </div>
   </div>
+  {% endif %}
 
   <div id="deposit-modal" class="modal" tabindex="-1">
     <div class="modal-dialog">
@@ -86,11 +112,11 @@
           <h5 class="modal-title">Kautionszahlung bestätigen</h5>
           <button
             type="button"
-            class="close"
+            class="btn-close"
             data-bs-dismiss="modal"
             aria-label="Close"
           >
-            &times;
+            X
           </button>
         </div>
         <div class="modal-body">
@@ -112,51 +138,99 @@
     </div>
   </div>
 
-  <form
-    action="{{ url_for('main.favorite_tool', tool_id=tool.id) }}"
-    method="POST"
-    class="mt-4"
-  >
-    <button type="submit" class="btn btn-outline-primary">
-      <i class="fas fa-heart"></i> Zu Favoriten hinzufügen
-    </button>
-  </form>
 </div>
+  <div id="loader" style="display: none; text-align: center; margin-top: 20px">
+    <i class="fas fa-spinner fa-spin"></i> Zahlung wird verarbeitet...
+  </div>
 
-<div id="loader" style="display: none; text-align: center; margin-top: 20px">
-  <i class="fas fa-spinner fa-spin"></i> Zahlung wird verarbeitet...
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      flatpickr("#availability_calendar", {
+        dateFormat: "Y-m-d",
+        minDate: "{{ tool.available_from.strftime('%Y-%m-%d') }}",
+        maxDate: "{{ tool.available_until.strftime('%Y-%m-%d') }}",
+      });
+
+      const toolAvailableFrom = new Date(
+        "{{ tool.available_from.strftime('%Y-%m-%d') }}"
+      );
+      const toolAvailableUntil = new Date(
+        "{{ tool.available_until.strftime('%Y-%m-%d') }}"
+      );
+
+      const startDateInput = document.getElementById("start_date");
+      const endDateInput = document.getElementById("end_date");
+      const errorMessage = document.getElementById("date-error-message");
+      const submitButton = document.getElementById("submit-btn");
+      const loader = document.getElementById("loader");
+      const confirmationMessage = document.getElementById(
+        "confirmation-message"
+      );
+
+      function clearInvalidField(field) {
+        field.value = "";
+      }
+
+      function validateDates() {
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+
+        if (
+          startDate < toolAvailableFrom ||
+          endDate > toolAvailableUntil ||
+          startDate > endDate
+        ) {
+          errorMessage.style.display = "block";
+          submitButton.disabled = true;
+
+          if (startDate < toolAvailableFrom || startDate > endDate) {
+            clearInvalidField(startDateInput);
+          }
+          if (endDate > toolAvailableUntil || endDate < startDate) {
+            clearInvalidField(endDateInput);
+          }
+        } else {
+          errorMessage.style.display = "none";
+          submitButton.disabled = false;
+        }
+      }
+
+      startDateInput.addEventListener("change", validateDates);
+      endDateInput.addEventListener("change", validateDates);
+
+      const modal = new bootstrap.Modal(
+        document.getElementById("deposit-modal")
+      );
+      const payDepositBtn = document.getElementById("pay-deposit-btn");
+      const confirmPaymentBtn = document.getElementById("confirm-payment-btn");
+
+      payDepositBtn.addEventListener("click", function () {
+        if (!startDateInput.value || !endDateInput.value) {
+          alert("Please select start and end dates first.");
+          return;
+        }
+        console.log(startDateInput, endDateInput);
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+        modal.show();
+      });
+
+      confirmPaymentBtn.addEventListener("click", function () {
+        modal.hide();
+        loader.style.display = "block";
+
+        setTimeout(() => {
+          loader.style.display = "none";
+          confirmationMessage.style.display = "block";
+          document.getElementById("borrow-form").submit();
+        }, 2000);
+      });
+
+      document.querySelector(".close").addEventListener("click", function () {
+        modal.hide();
+      });
+    });
+  </script>
+
+  {% endblock %}
 </div>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    flatpickr("#availability_calendar", {
-      dateFormat: "Y-m-d",
-      minDate: "{{ tool.available_from.strftime('%Y-%m-%d') }}",
-      maxDate: "{{ tool.available_until.strftime('%Y-%m-%d') }}",
-    });
-
-    const modal = new bootstrap.Modal(document.getElementById("deposit-modal"));
-    const payDepositBtn = document.getElementById("pay-deposit-btn");
-    const confirmPaymentBtn = document.getElementById("confirm-payment-btn");
-    const loader = document.getElementById("loader");
-
-    payDepositBtn.addEventListener("click", function () {
-      modal.show();
-    });
-
-    confirmPaymentBtn.addEventListener("click", function () {
-      loader.style.display = "block";
-      modal.hide();
-
-      setTimeout(() => {
-        document.getElementById("borrow-form").submit();
-      }, 2000);
-    });
-
-    document.querySelector(".close").addEventListener("click", function () {
-      modal.hide();
-    });
-  });
-</script>
-
-{% endblock %}

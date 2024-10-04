@@ -52,6 +52,20 @@
             >
               Login
             </div>
+
+            <div class="container mt-4">
+              {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+              <div class="alert-container">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} fade show" role="alert">
+                  {{ message }}
+                </div>
+                {% endfor %}
+              </div>
+              {% endif %} {% endwith %}
+            </div>
+
             <form method="POST" action="{{ url_for('auth.login') }}">
               <div data-mdb-input-init class="form-outline mb-4">
                 <input

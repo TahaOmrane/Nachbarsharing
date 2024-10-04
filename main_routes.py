@@ -102,7 +102,6 @@ def borrow_tool(user_id, tool_id, start_date, end_date):
         borrower_id=user_id,
         lender_id=tool.owner_id,
         borrow_date=start_date,
-        return_date=end_date
     )
 
     db.session.add(borrowing_entry)
@@ -120,7 +119,7 @@ def borrow_tool_route(tool_id):
 
     message = borrow_tool(user_id, tool_id, start_date, end_date)
 
-    flash(message)
+    flash(message, 'success')
     return redirect(url_for('main.tool_detail', tool_id=tool_id))
 
 
@@ -227,3 +226,26 @@ def ranks():
     top_borrowers = [user for user in top_borrowers if len(user.borrowing_history) >= 5]
     
     return render_template('ranks.html', top_lenders=top_lenders, top_borrowers=top_borrowers)
+
+
+@main.route('/return-tool/<int:history_id>', methods=['POST'])
+@login_required
+def return_tool(history_id):
+    history = BorrowingHistory.query.get_or_404(history_id)
+
+    # Ensure that the current user is the one who borrowed the tool
+    if history.borrower_id != current_user.id:
+        flash("You are not authorized to return this tool.", "danger")
+        return redirect(url_for('main.borrowing_history'))
+
+    # Set the return date
+    history.return_date = datetime.utcnow()
+
+    # Free up the tool (set borrowed_by_id to None)
+    tool = Tool.query.get_or_404(history.tool_id)
+    tool.borrowed_by_id = None
+
+    db.session.commit()
+
+    flash("Tool returned successfully!", "success")
+    return redirect(url_for('main.borrowing_history'))

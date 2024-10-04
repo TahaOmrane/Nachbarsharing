@@ -1,7 +1,6 @@
 {% extends 'base.html' %} {% block title %} Borrowing History {% endblock %} {%
 block content %}
 <div class="container mt-5">
-
   <h1 class="text-center mb-5">Borrowing History</h1>
 
   <h2 class="mb-4 text-primary">Tools You've Borrowed</h2>
@@ -15,6 +14,7 @@ block content %}
           <th>Borrow Date</th>
           <th>Return Date</th>
           <th>Tool Condition</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
@@ -30,6 +30,16 @@ block content %}
             {% endif %}
           </td>
           <td>{{ history.tool.condition }}</td>
+          <td>
+            {% if not history.return_date %}
+            <form
+              method="POST"
+              action="{{ url_for('main.return_tool', history_id=history.id) }}"
+            >
+              <button type="submit" class="btn btn-danger">Return Tool</button>
+            </form>
+            {% endif %}
+          </td>
         </tr>
         {% endfor %}
       </tbody>

@@ -41,7 +41,7 @@ def login():
             flash('Logged in successfully!', 'success')
             return redirect(url_for('dashboard'))
         else:
-            flash('Invalid username or password, please try again.', 'error')
+            flash('Invalid username or password, please try again.', 'danger')
     
     return render_template('login.html')
 
