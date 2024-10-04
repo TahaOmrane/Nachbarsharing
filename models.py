@@ -18,15 +18,22 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     rank = db.Column(db.String(50), nullable=True)
     
-    tools = db.relationship('Tool', backref='owner',foreign_keys='Tool.owner_id', lazy=True)
+    tools = db.relationship('Tool', backref='owner', 
+                            foreign_keys='Tool.owner_id', 
+                            cascade="all, delete-orphan", 
+                            lazy=True)
+                            
     borrowing_history = db.relationship('BorrowingHistory', 
                                         backref='borrower', 
                                         foreign_keys='BorrowingHistory.borrower_id', 
+                                        cascade="all, delete-orphan", 
                                         lazy=True)    
-    lent_tools= db.relationship('BorrowingHistory', 
-                                        backref='lender', 
-                                        foreign_keys='BorrowingHistory.lender_id', 
-                                        lazy=True)    
+                                        
+    lent_tools = db.relationship('BorrowingHistory', 
+                                 backref='lender', 
+                                 foreign_keys='BorrowingHistory.lender_id', 
+                                 cascade="all, delete-orphan", 
+                                 lazy=True)
     friends = db.relationship(
         'User', secondary='user_friends',
         primaryjoin=(id == user_friends.c.user_id),
