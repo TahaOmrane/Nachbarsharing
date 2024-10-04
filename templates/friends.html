@@ -1,25 +1,60 @@
 {% extends 'base.html' %} {% block title %}Meine Freunde{% endblock %} {% block
 content %}
-<h2>Freunde</h2>
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Meine Freunde</h1>
 
-<ul>
-  {% for friend in friends %}
-  <li>
-    {{ friend.username }}
-    <form
-      action="{{ url_for('main.remove_friend', friend_id=friend.id) }}"
-      method="POST"
-      style="display: inline"
+  <h2 class="mb-3">Freunde</h2>
+
+  {% if friends %}
+  <ul class="list-group mb-5">
+    {% for friend in friends %}
+    <li
+      class="list-group-item d-flex justify-content-between align-items-center"
     >
-      <button type="submit">Entfernen</button>
-    </form>
-  </li>
-  {% endfor %}
-</ul>
+      <span>{{ friend.username }}</span>
+      <form
+        action="{{ url_for('main.remove_friend', friend_id=friend.id) }}"
+        method="POST"
+        class="mb-0"
+      >
+        <button type="submit" class="btn btn-danger btn-sm">Entfernen</button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="alert alert-info">
+    <p>Sie haben noch keine Freunde hinzugefügt.</p>
+  </div>
+  {% endif %}
 
-<h3>Freund Hinzufügen</h3>
-<a href="{{ url_for('main.add_friend_page') }}">
-  <button type="button">Freund Hinzufügen</button>
-</a>
+  <div class="text-center mt-4">
+    <h3 class="mb-4">Freund Hinzufügen</h3>
+    <a href="{{ url_for('main.add_friend_page') }}">
+      <button type="button" class="btn btn-primary">Freund Hinzufügen</button>
+    </a>
+  </div>
+</div>
+
+<style>
+  h1,
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  .list-group-item {
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+
+  .alert {
+    padding: 20px;
+  }
+
+  .btn-sm {
+    padding: 5px 10px;
+  }
+</style>
 
 {% endblock %}

@@ -1,61 +1,131 @@
 {% extends 'base.html' %} {% block title %}{{ tool.name }} - Details{% endblock
 %} {% block content %}
-<h2>{{ tool.name }}</h2>
-<p>{{ tool.description }}</p>
-<p>Zustand: {{ tool.condition }}</p>
-<p>
-  Sicherheitskaution erforderlich: {{ 'Ja' if tool.deposit_required else 'Nein'
-  }}
-</p>
+<div class="container mt-5">
+  <h1 class="text-center mb-4">{{ tool.name }}</h1>
 
-<h3>Verfügbarkeit</h3>
-<p>Verfügbar ab: {{ tool.available_from.strftime('%d.%m.%Y') }}</p>
-<p>Verfügbar bis: {{ tool.available_until.strftime('%d.%m.%Y') }}</p>
+  <div class="row">
+    <div class="col-md-6">
+      <h3><i class="fas fa-info-circle"></i> Beschreibung</h3>
+      <p>{{ tool.description }}</p>
+      <p><strong>Zustand:</strong> {{ tool.condition }}</p>
+      <p>
+        <strong>Sicherheitskaution erforderlich:</strong> {{ 'Ja' if
+        tool.deposit_required else 'Nein' }}
+      </p>
+    </div>
 
-<form
-  method="POST"
-  action="{{ url_for('main.borrow_tool_route', tool_id=tool.id) }}"
-  id="borrow-form"
->
-  <label for="start_date">Start Date:</label>
-  <input type="date" name="start_date" required />
+    <div class="col-md-6">
+      <h3><i class="fas fa-calendar-alt"></i> Verfügbarkeit</h3>
+      <p>
+        <strong>Verfügbar ab:</strong> {{
+        tool.available_from.strftime('%d.%m.%Y') }}
+      </p>
+      <p>
+        <strong>Verfügbar bis:</strong> {{
+        tool.available_until.strftime('%d.%m.%Y') }}
+      </p>
 
-  <label for="end_date">End Date:</label>
-  <input type="date" name="end_date" required />
-
-  {% if tool.deposit_required and tool.deposit_required> 0 %}
-  <p>Kaution: €{{ tool.deposit_required }}</p>
-  <button type="button" id="pay-deposit-btn" class="btn btn-primary">
-    Kaution bezahlen (€{{ tool.deposit_required }})
-  </button>
-  {% else %}
-  <button type="submit" class="btn btn-primary">Ausleihen</button>
-  {% endif %}
-</form>
-
-<div id="deposit-modal" class="modal" style="display: none">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <p>
-      Bitte bestätigen Sie die Kautionszahlung von €{{ tool.deposit_required }}.
-    </p>
-    <button type="button" id="confirm-payment-btn" class="btn btn-success">
-      Bestätigen und bezahlen
-    </button>
+      <h4>Verfügbarkeitskalender</h4>
+      <input
+        type="text"
+        id="availability_calendar"
+        class="form-control mb-3"
+        readonly
+      />
+    </div>
   </div>
+
+  <div class="row mt-4">
+    <div class="col-md-8 mx-auto">
+      <form
+        method="POST"
+        action="{{ url_for('main.borrow_tool_route', tool_id=tool.id) }}"
+        id="borrow-form"
+      >
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="start_date">Startdatum:</label>
+            <input
+              type="date"
+              name="start_date"
+              class="form-control"
+              required
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="end_date">Enddatum:</label>
+            <input type="date" name="end_date" class="form-control" required />
+          </div>
+        </div>
+
+        {% if tool.deposit_required and tool.deposit_required > 0 %}
+        <div class="mb-3">
+          <p><strong>Kaution:</strong> €{{ tool.deposit_required }}</p>
+          <button
+            type="button"
+            id="pay-deposit-btn"
+            class="btn btn-warning btn-block"
+          >
+            <i class="fas fa-euro-sign"></i> Kaution bezahlen (€{{
+            tool.deposit_required }})
+          </button>
+        </div>
+        {% else %}
+        <button type="submit" class="btn btn-primary btn-block">
+          Ausleihen
+        </button>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <div id="deposit-modal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Kautionszahlung bestätigen</h5>
+          <button
+            type="button"
+            class="close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Bitte bestätigen Sie die Kautionszahlung von €{{
+            tool.deposit_required }}.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            id="confirm-payment-btn"
+            class="btn btn-success"
+          >
+            Bestätigen und bezahlen
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form
+    action="{{ url_for('main.favorite_tool', tool_id=tool.id) }}"
+    method="POST"
+    class="mt-4"
+  >
+    <button type="submit" class="btn btn-outline-primary">
+      <i class="fas fa-heart"></i> Zu Favoriten hinzufügen
+    </button>
+  </form>
 </div>
 
-<div id="loader" style="display: none">Processing payment...</div>
-
-<h3>Verfügbarkeitskalender</h3>
-<input type="text" id="availability_calendar" readonly />
-
-<form
-  action="{{ url_for('main.favorite_tool', tool_id=tool.id) }}"
-  method="POST"
->
-  <button type="submit" class="btn btn-primary">Add to Favorites</button>
-</form>
+<div id="loader" style="display: none; text-align: center; margin-top: 20px">
+  <i class="fas fa-spinner fa-spin"></i> Zahlung wird verarbeitet...
+</div>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -65,18 +135,18 @@
       maxDate: "{{ tool.available_until.strftime('%Y-%m-%d') }}",
     });
 
-    const modal = document.getElementById("deposit-modal");
+    const modal = new bootstrap.Modal(document.getElementById("deposit-modal"));
     const payDepositBtn = document.getElementById("pay-deposit-btn");
     const confirmPaymentBtn = document.getElementById("confirm-payment-btn");
     const loader = document.getElementById("loader");
 
     payDepositBtn.addEventListener("click", function () {
-      modal.style.display = "block";
+      modal.show();
     });
 
     confirmPaymentBtn.addEventListener("click", function () {
       loader.style.display = "block";
-      modal.style.display = "none";
+      modal.hide();
 
       setTimeout(() => {
         document.getElementById("borrow-form").submit();
@@ -84,7 +154,7 @@
     });
 
     document.querySelector(".close").addEventListener("click", function () {
-      modal.style.display = "none";
+      modal.hide();
     });
   });
 </script>

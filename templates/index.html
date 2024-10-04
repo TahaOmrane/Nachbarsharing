@@ -1,13 +1,171 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Dashboard</title>
-  </head>
-  <body>
-    <h2>Welcome, {{ username }}!</h2>
-    <a href="{{ url_for('auth.logout') }}">Logout</a>
-    <a href="{{ url_for('main.submit_tool') }}">Add Tool</a>
-    <a href="{{ url_for('main.explore') }}">explore</a>
-  </body>
-</html>
-`
+{% extends "base.html" %} {% block title %} Willkommen bei Tool-Sharing {%
+endblock %} {% block content %}
+<div class="text-center" style="width: 100%">
+  <div style="display: flex; justify-content: center; align-items: center">
+    <div class="hero-content">
+      <h1
+        class="display-4 fw-bold text-primary animate__animated animate__fadeInDown"
+      >
+        Willkommen bei Tool-Sharing
+      </h1>
+      <p class="lead animate__animated animate__fadeInUp" style="color: black">
+        Teilen Sie Werkzeuge in Ihrer Nachbarschaft und machen Sie das Leben
+        einfacher!
+      </p>
+      <a
+        href="#explore"
+        class="btn btn-primary btn-lg mt-3 animate__animated animate__fadeInUp"
+      >
+        Los geht's
+      </a>
+    </div>
+  </div>
+
+  <section id="explore" class="mb-5 mt-5">
+    <div class="row text-center">
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm animate__animated animate__zoomIn">
+          <div class="card-body">
+            <i class="fas fa-wrench fa-3x text-primary mb-3"></i>
+            <h5 class="card-title">Werkzeuge erkunden</h5>
+            <p class="card-text">
+              Entdecken Sie alle verfügbaren Werkzeuge und sehen Sie, was Ihre
+              Nachbarn anbieten.
+            </p>
+            <a
+              href="{{ url_for('main.explore') }}"
+              class="btn btn-outline-primary"
+              >Jetzt erkunden</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div
+          class="card h-100 shadow-sm animate__animated animate__zoomIn delay-1s"
+        >
+          <div class="card-body">
+            <i class="fas fa-plus-circle fa-3x text-primary mb-3"></i>
+            <h5 class="card-title">Werkzeug einreichen</h5>
+            <p class="card-text">
+              Haben Sie ein Werkzeug, das Sie teilen möchten? Reichen Sie es
+              hier ein!
+            </p>
+            <a
+              href="{{ url_for('main.submit_tool') }}"
+              class="btn btn-outline-primary"
+              >Werkzeug einreichen</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div
+          class="card h-100 shadow-sm animate__animated animate__zoomIn delay-2s"
+        >
+          <div class="card-body">
+            <i class="fas fa-history fa-3x text-primary mb-3"></i>
+            <h5 class="card-title">Borrowing History</h5>
+            <p class="card-text">
+              Sehen Sie sich Ihre Ausleihhistorie an und behalten Sie Ihre
+              Aktivitäten im Auge.
+            </p>
+            <a
+              href="{{ url_for('main.borrowing_history') }}"
+              class="btn btn-outline-primary"
+              >Historie ansehen</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row text-center">
+      <div class="col-md-4 mb-4">
+        <div
+          class="card h-100 shadow-sm animate__animated animate__zoomIn delay-3s"
+        >
+          <div class="card-body">
+            <i class="fas fa-heart fa-3x text-primary mb-3"></i>
+            <h5 class="card-title">Gespeicherte Werkzeuge</h5>
+            <p class="card-text">
+              Finden Sie Ihre Lieblingswerkzeuge schnell wieder in Ihrer
+              Favoritenliste.
+            </p>
+            <a
+              href="{{ url_for('main.favorites') }}"
+              class="btn btn-outline-primary"
+              >Favoriten anzeigen</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div
+          class="card h-100 shadow-sm animate__animated animate__zoomIn delay-4s"
+        >
+          <div class="card-body">
+            <i class="fas fa-users fa-3x text-primary mb-3"></i>
+            <h5 class="card-title">Freunde</h5>
+            <p class="card-text">
+              Verwalten Sie Ihre Freundesliste und teilen Sie Werkzeuge
+              effizienter.
+            </p>
+            <a
+              href="{{ url_for('main.friends') }}"
+              class="btn btn-outline-primary"
+              >Freunde verwalten</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div
+          class="card h-100 shadow-sm animate__animated animate__zoomIn delay-5s"
+        >
+          <div class="card-body">
+            <i class="fas fa-trophy fa-3x text-primary mb-3"></i>
+            <h5 class="card-title">Ranks</h5>
+            <p class="card-text">
+              Sehen Sie, wie gut Sie bewertet wurden und steigen Sie in den
+              Rängen auf!
+            </p>
+            <a
+              href="{{ url_for('main.ranks') }}"
+              class="btn btn-outline-primary"
+              >Ranks anzeigen</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<style>
+  .hero-section {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+  }
+
+  .hero-content {
+    max-width: 700px;
+  }
+
+  .card {
+    transition: transform 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-10px);
+  }
+</style>
+{% endblock %}

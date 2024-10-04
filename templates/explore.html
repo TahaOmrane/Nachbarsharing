@@ -1,14 +1,51 @@
-{% extends 'base.html' %} {% block title %}Werkzeuge Erkunden{% endblock %} {%
+{% extends 'base.html' %} {% block title %} Werkzeuge Erkunden {% endblock %} {%
 block content %}
-<h2>Erkunden Sie Werkzeuge</h2>
+<div class="container mt-5">
 
-<ul>
-  {% for tool in tools %}
-  <li>
-    <h3>{{ tool.name }}</h3>
-    <p>{{ tool.description }}</p>
-    <a href="{{ url_for('main.tool_detail', tool_id=tool.id) }}">Mehr Info</a>
-  </li>
-  {% endfor %}
-</ul>
+  <div class="text-center">
+    <h2
+      class="display-4 fw-bold text-primary mb-5 animate__animated animate__fadeInDown"
+    >
+      Erkunden Sie Werkzeuge
+    </h2>
+  </div>
+
+  <div class="row">
+    {% for tool in tools %}
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="card h-100 shadow-lg animate__animated animate__fadeInUp">
+        <div class="card-body">
+          <h5 class="card-title text-primary">{{ tool.name }}</h5>
+          <p class="card-text">
+            {{ tool.description|truncate(100) }}
+          </p>
+          <a
+            href="{{ url_for('main.tool_detail', tool_id=tool.id) }}"
+            class="btn btn-outline-primary"
+          >
+            Mehr Info
+          </a>
+        </div>
+        <div class="card-footer text-muted">
+          <i class="fas fa-calendar-alt"></i> Verfügbar von: {{
+          tool.available_from.strftime('%d.%m.%Y') }} bis {{
+          tool.available_until.strftime('%d.%m.%Y') }}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  }
+</style>
+
 {% endblock %}

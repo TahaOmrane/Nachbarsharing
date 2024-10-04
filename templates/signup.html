@@ -2,21 +2,113 @@
 <html lang="en">
   <head>
     <title>Signup</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='lib/owlcarousel/assets/owl.carousel.min.css') }}"
+      rel="stylesheet"
+    />
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <link
+      href="{{ url_for('static', filename='lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css') }}"
+      rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='css/bootstrap.min.css') }}"
+      rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='css/style.css') }}"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <h2>Signup</h2>
-    <form method="POST">
-      <label for="username">Username</label>
-      <input type="text" name="username" required />
-      <br />
-      <label for="email">Email</label>
-      <input type="email" name="email" required />
-      <br />
-      <label for="password">Password</label>
-      <input type="password" name="password" required />
-      <br />
-      <button type="submit">Signup</button>
-    </form>
-    <a href="{{ url_for('auth.login') }}">Already have an account? Log in</a>
+    <section class="vh-100">
+      <div class="container py-5 h-100">
+        <div class="row d-flex align-items-center justify-content-center h-100">
+          <div class="col-md-8 col-lg-4 col-xl-6" style="margin-top: -70px">
+            <img
+              src="{{ url_for('static', filename='img/login_img.svg') }}"
+              class="img-fluid"
+              id="signin_photo"
+              style="min-height: 300px"
+              alt="Phone image"
+            />
+            <h4 style="margin-top: -70px; margin-left: 28%">
+              Create your Account
+            </h4>
+          </div>
+          <div
+            class="col-md-7 col-lg-5 col-xl-5 offset-xl-1"
+            style="margin-top: 30px"
+          >
+            <div
+              class="text-uppercase text-primary mb-1"
+              style="
+                color: black;
+                font-size: 40px;
+                font-weight: bolder;
+                text-align: center;
+              "
+            >
+              Sign Up
+            </div>
+            <form method="POST" action="{{ url_for('auth.signup') }}">
+              <div data-mdb-input-init class="form-outline mb-4">
+                <input
+                  type="text"
+                  id="form1Username"
+                  name="username"
+                  class="form-control form-control-lg"
+                  required
+                />
+                <label class="form-label" for="form1Username">Username</label>
+              </div>
+
+              <div data-mdb-input-init class="form-outline mb-4">
+                <input
+                  type="email"
+                  id="form1Email"
+                  name="email"
+                  class="form-control form-control-lg"
+                  required
+                />
+                <label class="form-label" for="form1Email">Email address</label>
+              </div>
+
+              <div data-mdb-input-init class="form-outline mb-4">
+                <input
+                  type="password"
+                  id="form1Password"
+                  name="password"
+                  class="form-control form-control-lg"
+                  required
+                />
+                <label class="form-label" for="form1Password">Password</label>
+              </div>
+
+              <button
+                type="submit"
+                data-mdb-button-init
+                data-mdb-ripple-init
+                class="btn btn-primary btn-lg btn-block"
+              >
+                Sign up
+              </button>
+            </form>
+            <p
+              class="mb-5 pb-lg-2"
+              style="color: #393f81; margin-top: 20px; text-align: center"
+            >
+              Already have an account?
+              <a href="{{ url_for('auth.login') }}" class="link">Login here</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
   </body>
 </html>
